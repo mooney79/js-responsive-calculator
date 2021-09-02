@@ -39,7 +39,7 @@ const $clearButton = document.querySelector(".clear");
 const $equalButton = document.querySelector(".equal-sign");
 const $screen = document.querySelector(".calculator-screen");
 let firstNumber = 0;
-let secondNumber = 0;
+//let secondNumber = 0;
 let currentNumber = 0;
 let currentOperator = '';
 
@@ -191,7 +191,12 @@ function pushOperator(str){
     } else {
         calculation.push(str);
         console.log(calculation.join(''));
-        firstNumber = currentNumber;
+        if (firstNumber === 0) {
+            firstNumber = currentNumber;
+        }
+        if (currentOperator != ''){
+            calculate();
+        }
         $screen.value = currentNumber;
         currentNumber = 0;
         currentOperator = str;
@@ -208,8 +213,7 @@ function calculate(){
      switch (currentOperator) {
         case '+':
             $screen.value = add(firstNumber, currentNumber);
-            //console.log(add(firstNumber, currentNumber));
-        break;
+            break;
         case '*':
             $screen.value = multiply(firstNumber, currentNumber);
             break;
@@ -223,24 +227,44 @@ function calculate(){
             console.log("Something's busted");
     } 
 
+   
 };
 
 function add(num1, num2){
     let result = num1 + num2;
+    firstNumber = result;
+    currentNumber = 0;
+    currentOperator = '';
     return result;
 }
 
 function multiply(num1, num2){
     let result = num1 * num2;
+    firstNumber = result;
+    currentNumber = 0;
+    currentOperator = '';
     return result;
 }
 
 function subtract(num1, num2){
     let result = num1 - num2;
+    firstNumber = result;
+    currentNumber = 0;
+    currentOperator = '';
     return result;
 }
 
 function divide(num1, num2){
     let result = num1 / num2;
+    firstNumber = result;
+    currentNumber = 0;
+    currentOperator = '';
     return result;
 }
+
+
+/*
+Noted bug list
+
+
+*/
