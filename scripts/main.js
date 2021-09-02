@@ -5,8 +5,6 @@
 
 You are not allowed to use the JavaScript function eval
 
-For the following, use the code from Eloquent JavaScript to handle click events:
-
 Using Array.prototype.push, perform actions on the calculation variable when numbers 
 and operators are pressed
 
@@ -14,30 +12,7 @@ Using a for loop, alert() the calculation when = is pressed
 
 Make the numbers and calculations appear on the calculator display
 
-Read 
-[Values](http://eloquentjavascript.net/01_values.html#h_sVZPaxUSy/), 
-[Numbers](http://eloquentjavascript.net/01_values.html#h_flOCH3CuFg), 
-[Arithmetic](http://eloquentjavascript.net/01_values.html#h_RfBT3HMnYs), 
-[Variables](http://eloquentjavascript.net/02_program_structure.html#h_rAGNsfewCX), 
-[Defining A Function](http://eloquentjavascript.net/03_functions.html#h_tqLFw/oazr), 
-[Event Handlers](http://eloquentjavascript.net/14_event.html#h_HQoLxG2r2l) 
-[Events and DOM Nodes](http://eloquentjavascript.net/14_event.html#h_Kx1VwAV7ei)
 
-<p>Click this document to activate the handler.</p>
-<script>
-  window.addEventListener("click", () => {
-    console.log("You knocked?");
-  });
-</script>
-
-<button>Click me</button>
-<p>No handler here.</p>
-<script>
-  let button = document.querySelector("button");
-  button.addEventListener("click", () => {
-    console.log("Button clicked.");
-  });
-</script>
 
 
 Okay.  Let's consider some stuff.
@@ -62,6 +37,11 @@ const $operatorButtons = document.querySelectorAll(".operator");
 const operArray = Array.from($operatorButtons.keys());
 const $clearButton = document.querySelector(".clear");
 const $equalButton = document.querySelector(".equal-sign");
+const $screen = document.querySelector(".calculator-screen");
+let firstNumber = 0;
+let secondNumber = 0;
+let currentNumber = 0;
+let currentOperator = '';
 
 
 for (i=0; i < numArray.length; i++) {
@@ -102,43 +82,43 @@ for (i=0; i < numArray.length; i++) {
 }
 
 $numberButtons[0].addEventListener("click", () => {
-    console.log(numArrayFix[0]);
+//    console.log(numArrayFix[0]);
     pushNumber(numArrayFix[0]);
 });
 $numberButtons[1].addEventListener("click", () => {
-    console.log(numArrayFix[1]);
+//    console.log(numArrayFix[1]);
     pushNumber(numArrayFix[1]);
 });
 $numberButtons[2].addEventListener("click", () => {
-    console.log(numArrayFix[2]);
+//    console.log(numArrayFix[2]);
     pushNumber(numArrayFix[2]);
 });
 $numberButtons[3].addEventListener("click", () => {
-    console.log(numArrayFix[3]);
+//    console.log(numArrayFix[3]);
     pushNumber(numArrayFix[3]);
 });
 $numberButtons[4].addEventListener("click", () => {
-    console.log(numArrayFix[4]);
+//    console.log(numArrayFix[4]);
     pushNumber(numArrayFix[4]);
 });
 $numberButtons[5].addEventListener("click", () => {
-    console.log(numArrayFix[5]);
+//    console.log(numArrayFix[5]);
     pushNumber(numArrayFix[5]);
 });
 $numberButtons[6].addEventListener("click", () => {
-    console.log(numArrayFix[6]);
+//    console.log(numArrayFix[6]);
     pushNumber(numArrayFix[6]);
 });
 $numberButtons[7].addEventListener("click", () => {
-    console.log(numArrayFix[7]);
+//    console.log(numArrayFix[7]);
     pushNumber(numArrayFix[7]);
 });
 $numberButtons[8].addEventListener("click", () => {
-    console.log(numArrayFix[8]);
+//    console.log(numArrayFix[8]);
     pushNumber(numArrayFix[8]);
 });
 $numberButtons[9].addEventListener("click", () => {
-    console.log(numArrayFix[9]);
+//    console.log(numArrayFix[9]);
     pushNumber(numArrayFix[9]);
 });
 
@@ -164,28 +144,28 @@ for (i=0; i < operArray.length; i++) {
 
 
 $operatorButtons[0].addEventListener("click", () => {
-    console.log(operArray[0]);
+//    console.log(operArray[0]);
     pushOperator(operArray[0]);
 });
 $operatorButtons[1].addEventListener("click", () => {
-    console.log(operArray[1]);
+//    console.log(operArray[1]);
     pushOperator(operArray[1]);
 });
 $operatorButtons[2].addEventListener("click", () => {
-    console.log(operArray[2]);
+//    console.log(operArray[2]);
     pushOperator(operArray[2]);
 });
 $operatorButtons[3].addEventListener("click", () => {
-    console.log(operArray[3]);
+//    console.log(operArray[3]);
     pushOperator(operArray[3]);
 });
 $clearButton.addEventListener("click", () => {
-    console.log("Clear!")
+//    console.log("Clear!")
     pushOperator("C");
 })
 
 $equalButton.addEventListener("click", () => {
-    console.log("=")
+//    console.log("=")
     calculate();
 })
 
@@ -193,15 +173,74 @@ $equalButton.addEventListener("click", () => {
 var calculation = [];
 
 function pushNumber(num){
-    alert(num);
+//    alert(num);
+    calculation.push(num);
+    currentNumber = (currentNumber*10) + num;
+    console.log(calculation.join(''));
+    $screen.value = currentNumber;  //  <--- THIS IS WHAT CHANGES THE DISPLAY
 };
 
-function pushOperator(num){
-    alert(num);
+function pushOperator(str){
+//    alert(str);
+    if (str === "C") {
+        calculation = [];
+        firstNumber = 0;
+        currentNumber = 0;
+        secondNumber = 0;
+        $screen.value = '0';
+    } else {
+        calculation.push(str);
+        console.log(calculation.join(''));
+        firstNumber = currentNumber;
+        $screen.value = currentNumber;
+        currentNumber = 0;
+        currentOperator = str;
+    }
 };
 
 function calculate(){
-    alert(" = ");
+//    alert(" = ");
+      console.log("=");
+     //Okay.  Go down the array, peeling each number off until we hit an operator.'
+     //for (i = 0; i > calculation.length; i++) {
+        //
+     //} 
+     switch (currentOperator) {
+        case '+':
+            $screen.value = add(firstNumber, currentNumber);
+            //console.log(add(firstNumber, currentNumber));
+        break;
+        case '*':
+            $screen.value = multiply(firstNumber, currentNumber);
+            break;
+        case `-`:
+            $screen.value = subtract(firstNumber, currentNumber);
+            break;
+        case '/':
+            $screen.value = divide(firstNumber, currentNumber);
+            break;
+        default:
+            console.log("Something's busted");
+    } 
+
 };
 
+function add(num1, num2){
+    let result = num1 + num2;
+    return result;
+}
 
+function multiply(num1, num2){
+    let result = num1 * num2;
+    return result;
+}
+
+function subtract(num1, num2){
+    let result = num1 - num2;
+    return result;
+}
+
+function divide(num1, num2){
+    let result = num1 / num2;
+    return result;
+}
