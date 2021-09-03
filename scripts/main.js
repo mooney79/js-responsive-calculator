@@ -3,12 +3,15 @@ Known bug list
 * I would like the Display to show firstNumber as it's being typed, then remain on firstNumber when an Operator
     is pressed, then show secondNumber as it's being typed -- WITHOUT showing the whole string.
 * Secondary calculations (4+4+4) are no longer being resolved.
-* Sometimes after equal is pressed, display shows result when another operator is pressed, sometimes it shows
-    the previous string
 * Pressing an operator more than once (IE, 9**9) before calculate runs results in NaN.  Can I set something up
-    so that it just takes the most recently pressed operator?
-* Results with a decimal in them show a NaN in place of the decimal.  Presumably because of the .map(Number)
-    Look into other ways to turn that result back into an array. Maybe toString, then split?
+    so that it just takes the most recently pressed operator? Perhaps calcuate if there is a number between, else
+    overwrite current operator with new
+* Refactor switches into target.value, etc.
+lets track currentOperator
+console.log(currentOperator);
+Okay.  When is it assigned?  unpack
+When is it cleared? push C (thumbs up), after calculations are run, again IN EACH mathy function
+When is it tested: In unpack(thumbs up) and in pushOper
 */
 
 ///////////////////////////////////////
@@ -125,6 +128,7 @@ $equalButton.addEventListener("click", () => {
 ///////////////////////////////////////
 
 let marker = 0;
+//let activeOperator = '';
 function unpackArray(arr){
     for (i=0; i < arr.length; i++){
         if (currentOperator === '') {
@@ -132,6 +136,7 @@ function unpackArray(arr){
                 //Increment i without doing anything
             } else {
                 currentOperator = arr[i];
+                console.log(currentOperator); //DEBUGGING
                 let arrToString = arr.join('').slice(0,i);
                 firstNumber = parseFloat(arrToString);
                 marker = i;
@@ -153,6 +158,7 @@ function pushNumber(num){
     $screen.value = screenDisplay;
 };
 
+//let operatorPressed = false;
 function pushOperator(str){
 //    alert(str);
     if (str === "C") {
@@ -160,24 +166,28 @@ function pushOperator(str){
         firstNumber = 0;
         secondNumber = 0;
         currentOperator = '';
-        $screen.value = '0';
+        console.log(currentOperator);// DEBUGGIN
+        screenDisplay = '0';
+        $screen.value = screenDisplay;
     } else {
         if (currentOperator != ''){   
             calculate();
         } else {
             calculation.push(str);
             $screen.value = screenDisplay;
-            //currentOperator = str;
+            //currentOperator = str; <--- this breaks things because it makes the IF statement in calculate
+            //evaluate false
         }
     }
+    console.log(screenDisplay);
 };
 
 function calculate(){
     //  alert(" = ");
     //  console.log("=");
-    //console.log(calculation);
+    console.log(calculation);  //debugging tool
     unpackArray(calculation); 
-    //console.log(firstNumber, secondNumber, currentOperator);
+    console.log(firstNumber, secondNumber, currentOperator); //debugging tool
     switch (currentOperator) {
         case '+':
             screenDisplay = add(firstNumber, secondNumber);
@@ -193,7 +203,10 @@ function calculate(){
             break;
         default:
             console.log("Something's busted");
-    }        
+    }
+    currentOperator = '';
+    console.log(currentOperator);
+    console.log(screenDisplay);        
 };
 
 ///////////////////////////////////////
@@ -203,9 +216,11 @@ function add(num1, num2){
     let result = num1 + num2;
     firstNumber = result;
     secondNumber = 0;
-    currentOperator = '';
+    //currentOperator = '';
+    console.log(currentOperator);
     calculation = [];
     calculation = [...firstNumber + ''].map(Number);
+    cleanUp(calculation);
     $screen.value = calculation.join('');
     return result;
 }
@@ -214,9 +229,11 @@ function multiply(num1, num2){
     let result = num1 * num2;
     firstNumber = result;
     secondNumber = 0;
-    currentOperator = '';
+//    currentOperator = '';
+    console.log(currentOperator);
     calculation = [];
     calculation = [...firstNumber + ''].map(Number);
+    cleanUp(calculation);
     $screen.value = calculation.join('');
     return result;
 }
@@ -225,9 +242,11 @@ function subtract(num1, num2){
     let result = num1 - num2;
     firstNumber = result;
     secondNumber = 0;
-    currentOperator = '';
+//    currentOperator = '';
+    console.log(currentOperator);
     calculation = [];
     calculation = [...firstNumber + ''].map(Number);
+    cleanUp(calculation);
     $screen.value = calculation.join('');
     return result;
 }
@@ -236,8 +255,22 @@ function divide(num1, num2){
     let result = num1 / num2;
     firstNumber = result;
     secondNumber = 0;
-    currentOperator = '';
+//    currentOperator = '';
+    console.log(currentOperator);
     calculation = [...firstNumber + ''].map(Number);
+    cleanUp(calculation);
     $screen.value = calculation.join('');
     return result;
+}
+
+
+///////////////////////////////////////
+////// Clean up NaN in results ////////
+///////////////////////////////////////
+function cleanUp(arr) {
+    for (i=0; i < arr.length; i++){
+        if (isNaN(arr[i])) {
+            arr[i] = '.';
+        }
+    }
 }
