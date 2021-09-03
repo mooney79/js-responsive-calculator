@@ -7,6 +7,8 @@ Known bug list
     the previous string
 * Pressing an operator more than once (IE, 9**9) before calculate runs results in NaN.  Can I set something up
     so that it just takes the most recently pressed operator?
+* Results with a decimal in them show a NaN in place of the decimal.  Presumably because of the .map(Number)
+    Look into other ways to turn that result back into an array. Maybe toString, then split?
 */
 
 ///////////////////////////////////////
@@ -69,50 +71,6 @@ for (i=0; i < numArray.length; i++) {
             console.log("Something's busted");
     } 
 }
-///////////////////////////////////////
-////// NUMBER EVENT LISTENERS  ////////
-///////////////////////////////////////
-
-$numberButtons[0].addEventListener("click", () => {
-//    console.log(numArrayFix[0]);
-    pushNumber(numArrayFix[0]);
-});
-$numberButtons[1].addEventListener("click", () => {
-//    console.log(numArrayFix[1]);
-    pushNumber(numArrayFix[1]);
-});
-$numberButtons[2].addEventListener("click", () => {
-//    console.log(numArrayFix[2]);
-    pushNumber(numArrayFix[2]);
-});
-$numberButtons[3].addEventListener("click", () => {
-//    console.log(numArrayFix[3]);
-    pushNumber(numArrayFix[3]);
-});
-$numberButtons[4].addEventListener("click", () => {
-//    console.log(numArrayFix[4]);
-    pushNumber(numArrayFix[4]);
-});
-$numberButtons[5].addEventListener("click", () => {
-//    console.log(numArrayFix[5]);
-    pushNumber(numArrayFix[5]);
-});
-$numberButtons[6].addEventListener("click", () => {
-//    console.log(numArrayFix[6]);
-    pushNumber(numArrayFix[6]);
-});
-$numberButtons[7].addEventListener("click", () => {
-//    console.log(numArrayFix[7]);
-    pushNumber(numArrayFix[7]);
-});
-$numberButtons[8].addEventListener("click", () => {
-//    console.log(numArrayFix[8]);
-    pushNumber(numArrayFix[8]);
-});
-$numberButtons[9].addEventListener("click", () => {
-//    console.log(numArrayFix[9]);
-    pushNumber(numArrayFix[9]);
-});
 
 ///////////////////////////////////////
 ////// ASSIGN OPERATOR DIVS VALUE  ////
@@ -138,25 +96,19 @@ for (i=0; i < operArray.length; i++) {
 }
 
 ///////////////////////////////////////
-////// OPERATOR EVENT LISTENERS  //////
+////// EVENT LISTENERS  ///////////////
 ///////////////////////////////////////
+for (let i = 0 ; i < $numberButtons.length; i++) {
+   $numberButtons[i].addEventListener('click', () => {
+       pushNumber(numArrayFix[i]);
+   }); 
+};
 
-$operatorButtons[0].addEventListener("click", () => {
-//    console.log(operArray[0]);
-    pushOperator(operArray[0]);
-});
-$operatorButtons[1].addEventListener("click", () => {
-//    console.log(operArray[1]);
-    pushOperator(operArray[1]);
-});
-$operatorButtons[2].addEventListener("click", () => {
-//    console.log(operArray[2]);
-    pushOperator(operArray[2]);
-});
-$operatorButtons[3].addEventListener("click", () => {
-//    console.log(operArray[3]);
-    pushOperator(operArray[3]);
-});
+for (let i = 0 ; i < $operatorButtons.length; i++) {
+    $operatorButtons[i].addEventListener('click', () => {
+        pushOperator(operArray[i]);
+    }); 
+ };
 
 $clearButton.addEventListener("click", () => {
 //    console.log("Clear!")
@@ -231,13 +183,13 @@ function calculate(){
             screenDisplay = add(firstNumber, secondNumber);
             break;
         case '*':
-            $screen.value = multiply(firstNumber, secondNumber);
+            screenDisplay = multiply(firstNumber, secondNumber);
             break;
         case `-`:
-            $screen.value = subtract(firstNumber, secondNumber);
+            screenDisplay = subtract(firstNumber, secondNumber);
             break;
         case '/':
-            $screen.value = divide(firstNumber, secondNumber);
+            screenDisplay = divide(firstNumber, secondNumber);
             break;
         default:
             console.log("Something's busted");
