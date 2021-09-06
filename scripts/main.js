@@ -1,17 +1,17 @@
 /*
-Known bug list
-* I would like the Display to show firstNumber as it's being typed, then remain on firstNumber when an Operator
-    is pressed, then show secondNumber as it's being typed -- WITHOUT showing the whole string.
-* Secondary calculations (4+4+4) are no longer being resolved.
-* Pressing an operator more than once (IE, 9**9) before calculate runs results in NaN.  Can I set something up
-    so that it just takes the most recently pressed operator? Perhaps calcuate if there is a number between, else
-    overwrite current operator with new
-* Refactor switches into target.value, etc.
-lets track currentOperator
-console.log(currentOperator);
-Okay.  When is it assigned?  unpack
-When is it cleared? push C (thumbs up), after calculations are run, again IN EACH mathy function
-When is it tested: In unpack(thumbs up) and in pushOper
+/////////////////////////////////////////////////////////////////////
+///////////// KNOWN BUG/DESIRED FEATURES LIST ///////////////////////
+////////////////////////////////////////////////////////////////////
+* (HIGH PRIORITY) Secondary calculations break the calculator (IE 3*3*3 will calculate 9, but then
+    the new operator isn't being added to calculation properly and the 3rd 3 is being appended to the 9).
+* (HIGH PRIORITY) positive/negative button functional (add to front of array on first number.  How on 2nd?
+    Then add a sort on the unpack to keep it in the "number" section for parseFloat once joined)
+
+* (LOW PRIORITY) Scientific calculator functions (square, cube, exponent, sqrt, cube root, arb. root, log, sin, 
+    cos, tan, sinh, cosh, tanh, "pi", "e")
+* (LOW PRIORITY) Scientific calculator memory functions (mc, m+, m-, mr)
+* (LOW PRIORITY) Make the calculator responsive so that when the browser is mobile size, the scientific 
+    functions disappear
 */
 
 ///////////////////////////////////////
@@ -23,9 +23,11 @@ const $numberButtons = document.querySelectorAll(".number");
 const $operatorButtons = document.querySelectorAll(".operator");
 const $clearButton = document.querySelector(".clear");
 const $equalButton = document.querySelector(".equal-sign");
+const $decimalButton = document.querySelector(".decimal");
 const $screen = document.querySelector(".calculator-screen");
 
 var calculation = [];
+let currentNum = [];
 
 let firstNumber = 0;
 let secondNumber = 0;
@@ -33,83 +35,17 @@ let currentOperator = '';
 let screenDisplay = '0';
 
 ///////////////////////////////////////
-////// FIX 'numArray'  ////////////////
-///////////////////////////////////////
-const numArray = Array.from($numberButtons.keys());
-let numArrayFix = [];
-
-for (i=0; i < numArray.length; i++) {
-    switch (numArray[i]) {
-        case 0:
-            numArrayFix[i] = 7;
-            break;
-        case 1:
-            numArrayFix[i] = 8;
-            break;
-        case 2:
-            numArrayFix[i] = 9;
-            break;
-        case 3:
-            numArrayFix[i] = 4;
-            break;
-        case 4:
-            numArrayFix[i] = 5;
-            break;
-        case 5:
-            numArrayFix[i] = 6;
-            break;
-        case 6:
-            numArrayFix[i] = 1;
-            break;
-        case 7:
-            numArrayFix[i] = 2;
-            break;
-        case 8:
-            numArrayFix[i] = 3;
-            break;
-        case 9:
-            numArrayFix[i] = 0;
-            break;
-        default:
-            console.log("Something's busted");
-    } 
-}
-
-///////////////////////////////////////
-////// ASSIGN OPERATOR DIVS VALUE  ////
-///////////////////////////////////////
-const operArray = Array.from($operatorButtons.keys());
-for (i=0; i < operArray.length; i++) {
-    switch (operArray[i]) {
-        case 0:
-            operArray[i] = '/';
-        break;
-        case 1:
-            operArray[i] = '*';
-            break;
-        case 2:
-            operArray[i] = `-`;
-            break;
-        case 3:
-            operArray[i] = '+';
-            break;
-        default:
-            console.log("Something's busted");
-    } 
-}
-
-///////////////////////////////////////
 ////// EVENT LISTENERS  ///////////////
 ///////////////////////////////////////
 for (let i = 0 ; i < $numberButtons.length; i++) {
    $numberButtons[i].addEventListener('click', () => {
-       pushNumber(numArrayFix[i]);
+     pushNumber($numberButtons[i].value);
    }); 
 };
 
 for (let i = 0 ; i < $operatorButtons.length; i++) {
     $operatorButtons[i].addEventListener('click', () => {
-        pushOperator(operArray[i]);
+        pushOperator($operatorButtons[i].value);
     }); 
  };
 
@@ -123,6 +59,12 @@ $equalButton.addEventListener("click", () => {
     calculate();
 })
 
+$decimalButton.addEventListener("click", () => {
+    //    console.log("Clear!")
+        pushDecimal($decimalButton.value);
+    })
+    
+
 ///////////////////////////////////////
 ////// UNPACK ARRAY FUNCTION //////////
 ///////////////////////////////////////
@@ -135,8 +77,7 @@ function unpackArray(arr){
             if (typeof arr[i] === 'number' || arr[i] === '.') {
                 //Increment i without doing anything
             } else {
-                currentOperator = arr[i];
-                console.log(currentOperator); //DEBUGGING
+                currentOperator=arr[i];
                 let arrToString = arr.join('').slice(0,i);
                 firstNumber = parseFloat(arrToString);
                 marker = i;
@@ -148,49 +89,53 @@ function unpackArray(arr){
 };
 
 
-
 ///////////////////////////////////////
 ////// BUTTON PRESS FUNCTIONS /////////
 ///////////////////////////////////////
 function pushNumber(num){
-    calculation.push(num);
-    screenDisplay = calculation.join('');
+    alert(num);
+    calculation.push(parseInt(num));
+    currentNum.push(num);
+    screenDisplay = currentNum.join('');
     $screen.value = screenDisplay;
 };
 
-//let operatorPressed = false;
+let operatorPressed = false;
 function pushOperator(str){
-//    alert(str);
+    alert(str);
+    console.log(str);
     if (str === "C") {
         calculation = [];
         firstNumber = 0;
         secondNumber = 0;
         currentOperator = '';
+        operatorPressed = false;
         console.log(currentOperator);// DEBUGGIN
         screenDisplay = '0';
         $screen.value = screenDisplay;
+        currentNum = [];
     } else {
-        if (currentOperator != ''){   
+        if (operatorPressed === true){   
             calculate();
+            operatorPressed === false;
+            currentNum = [];
         } else {
-            calculation.push(str);
             $screen.value = screenDisplay;
-            //currentOperator = str; <--- this breaks things because it makes the IF statement in calculate
-            //evaluate false
+            console.log(screenDisplay);
+            calculation.push(str);
+            operatorPressed = true;
+            currentNum = [];
         }
     }
-    console.log(screenDisplay);
 };
 
 function calculate(){
-    //  alert(" = ");
-    //  console.log("=");
-    console.log(calculation);  //debugging tool
+    alert("=");
     unpackArray(calculation); 
-    console.log(firstNumber, secondNumber, currentOperator); //debugging tool
     switch (currentOperator) {
         case '+':
             screenDisplay = add(firstNumber, secondNumber);
+
             break;
         case '*':
             screenDisplay = multiply(firstNumber, secondNumber);
@@ -205,18 +150,26 @@ function calculate(){
             console.log("Something's busted");
     }
     currentOperator = '';
-    console.log(currentOperator);
-    console.log(screenDisplay);        
+    operatorPressed = false;
+    console.log(calculation);
+    currentNum = [];
 };
+
+function pushDecimal(str){
+    calculation.push(str);
+    currentNum.push(str);
+    screenDisplay = currentNum.join('');
+    $screen.value = screenDisplay;
+}
 
 ///////////////////////////////////////
 ////// MATHEMATICAL FUNCTIONS /////////
 ///////////////////////////////////////
 function add(num1, num2){
     let result = num1 + num2;
+    alert(`${firstNumber} ${currentOperator} ${secondNumber} = ${result}`);
     firstNumber = result;
     secondNumber = 0;
-    //currentOperator = '';
     console.log(currentOperator);
     calculation = [];
     calculation = [...firstNumber + ''].map(Number);
@@ -227,9 +180,9 @@ function add(num1, num2){
 
 function multiply(num1, num2){
     let result = num1 * num2;
+    alert(`${firstNumber} ${currentOperator} ${secondNumber} = ${result}`);
     firstNumber = result;
     secondNumber = 0;
-//    currentOperator = '';
     console.log(currentOperator);
     calculation = [];
     calculation = [...firstNumber + ''].map(Number);
@@ -240,9 +193,9 @@ function multiply(num1, num2){
 
 function subtract(num1, num2){
     let result = num1 - num2;
+    alert(`${firstNumber} ${currentOperator} ${secondNumber} = ${result}`);
     firstNumber = result;
     secondNumber = 0;
-//    currentOperator = '';
     console.log(currentOperator);
     calculation = [];
     calculation = [...firstNumber + ''].map(Number);
@@ -253,9 +206,9 @@ function subtract(num1, num2){
 
 function divide(num1, num2){
     let result = num1 / num2;
+    alert(`${firstNumber} ${currentOperator} ${secondNumber} = ${result}`);
     firstNumber = result;
     secondNumber = 0;
-//    currentOperator = '';
     console.log(currentOperator);
     calculation = [...firstNumber + ''].map(Number);
     cleanUp(calculation);
